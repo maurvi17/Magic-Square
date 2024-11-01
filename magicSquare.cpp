@@ -12,7 +12,18 @@ public:
     // Constructor to initialize the magic square of size n
     MagicSquare(int n) : n(n), square(n, vector<int>(n, 0)) {}
 
-    // Generate magic square for odd order
+    // Generate magic square based on order type
+    void generate() {
+        if (n % 2 == 1) {
+            generateOddOrder();
+        } else if (n % 4 == 0) {
+            generateDoublyEvenOrder();
+        } else {
+            cout << "Magic square generation for singly even order (e.g., 6x6) is not supported.\n";
+        }
+    }
+
+    // Generate odd-order magic square using the Siamese method
     void generateOddOrder() {
         int i = 0;
         int j = n / 2;
@@ -26,6 +37,26 @@ public:
             } else {
                 i = newI;
                 j = newJ;
+            }
+        }
+    }
+
+    // Generate doubly even-order magic square (4x4, 8x8, etc.)
+    void generateDoublyEvenOrder() {
+        int num = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                square[i][j] = num++;
+            }
+        }
+
+        // Inverting the values in specific cells
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if ((i < n / 4 || i >= 3 * n / 4) && (j < n / 4 || j >= 3 * n / 4) ||
+                    (i >= n / 4 && i < 3 * n / 4 && j >= n / 4 && j < 3 * n / 4)) {
+                    square[i][j] = (n * n + 1) - square[i][j];
+                }
             }
         }
     }
@@ -67,22 +98,18 @@ public:
 
 int main() {
     int n;
-    cout << "Enter the size of the magic square (odd integer): ";
+    cout << "Enter the size of the magic square (odd or doubly even integer): ";
     cin >> n;
 
-    if (n % 2 == 1) {
-        MagicSquare magicSquare(n);
-        magicSquare.generateOddOrder();
-        cout << "Generated Magic Square of size " << n << ":\n";
-        magicSquare.printSquare();
+    MagicSquare magicSquare(n);
+    magicSquare.generate();
+    cout << "Generated Magic Square of size " << n << ":\n";
+    magicSquare.printSquare();
 
-        if (magicSquare.isMagicSquare()) {
-            cout << "The generated square is a valid magic square.\n";
-        } else {
-            cout << "The generated square is NOT a valid magic square.\n";
-        }
+    if (magicSquare.isMagicSquare()) {
+        cout << "The generated square is a valid magic square.\n";
     } else {
-        cout << "Only odd-order magic squares are supported in this version.\n";
+        cout << "The generated square is NOT a valid magic square.\n";
     }
 
     return 0;
